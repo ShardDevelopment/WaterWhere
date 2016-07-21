@@ -5,4 +5,4 @@ This App allows for people is developing countries to find clean water sources a
 
 All content is licensed under The MIT License (MIT).
 
-Created by Jaxon Kneipp and Damian C
+Created by Jaxon Kneipp and Damian Camilleri
