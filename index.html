@@ -1,0 +1,611 @@
+<!--Main icon contains water drop image from http://www.xerces.org/attract-dragonflies-and-damselflies-to-your-own-backyard/-->
+
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="main.css" />
+
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=geometry"></script>
+
+    <script src="main.js"></script>
+
+    <!--<script src="http://cgscomputing.com/damian/waterwhere/geolocation.js"></script>-->
+
+    <script>
+
+      var apiKey = 'G9MZ6jzzZ7JA7m9';
+
+      var clickedLat = 0;
+      var clickedLng = 0;
+
+      var locationsArray = [[19.19340173915684, -69.28484916687012], [19.19340173915684, -69.28484916687012], [18.932104106432227, -71.58245086669922], [15.8769700450889, -85.80785751342773], [15.50924913772365, -86.61140441894531], [13.234422822241, -87.36225128173828]]
+
+      var locationsIndex = Math.floor((Math.random() * 5) - 1);
+
+      var locationFromIndex = locationsArray[locationsIndex];
+
+      function initialize() {
+
+          document.getElementById("disatanceToClosestWaterSource").innerHTML = "";
+
+          myLatlng = new google.maps.LatLng(locationFromIndex[0],locationFromIndex[1]);
+
+          console.log(myLatlng);
+
+          //myLatlng = new google.maps.LatLng(18.476353,-70.103760);
+
+
+          allMapMarkers = [];
+
+          var markers_lat = [];
+          var markers_long = [];
+          var markers_title = [];
+          var markers_date = [];
+          var markers_community = [];
+
+          var upload_markers_lat = [];
+          var upload_markers_long = [];
+          var upload_names = [];
+          var upload_date = [];
+          var upload_description = [];
+
+          var keyText = "6M293]q>R>c6$,=";
+
+
+          //Base data Files
+          var csv_file = "data-dominicana-EN.csv";
+          var datatsetUrlStatic = "http://cgscomputing.com/damian/waterwhere/api/?source=";
+          var datasetUrlSource = "http://cgscomputing.com/damian/waterwhere/api/" + csv_file;
+          var reqUrl = datatsetUrlStatic+datasetUrlSource;
+
+          var req = new XMLHttpRequest();
+          req.open("GET", reqUrl , false);
+          req.send();
+
+          var base_json = JSON.parse(req.responseText);
+
+          baseJSONLength = 0
+
+
+          for (var i in base_json){
+
+            baseJSONLength++;
+
+            markers_title.push(base_json[i].DATE);
+            markers_lat.push(parseFloat(base_json[i].LAT));
+            markers_long.push(parseFloat(base_json[i].LONG));
+            markers_date.push(base_json[i].DATE);
+            markers_community.push(base_json[i].COMMUNITY);
+
+
+          }
+
+          //User uploaded Json load
+          var reqest = new XMLHttpRequest();
+          reqest.open("GET", "http://cgscomputing.com/damian/waterwhere/api/crowdsourced_loc/?key="+apiKey + "&method=getAll" , false);
+          reqest.send();
+          var upload_json = JSON.parse(reqest.responseText);
+
+          for (i in upload_json){
+            upload_names.push(upload_json[i].NAME);
+            upload_markers_lat.push(parseFloat(upload_json[i].LAT));
+            upload_markers_long.push(parseFloat(upload_json[i].LONG));
+            upload_date.push(upload_json[i].DATE);
+            upload_description.push(upload_json[i].DESCRIPTION);
+          }
+
+
+
+          var mainMapCanvas = document.getElementById('map-canvas-entry');
+
+
+          var mapOptions = {
+              zoom: 12,
+              center: myLatlng,
+              mapTypeControl: false,
+              panControl: false,
+              streetViewControl: false,
+              zoomControl: false,
+              styles: [{"elementType":"geometry","stylers":[{"hue":"#ff4400"},{"saturation":-68},{"lightness":-4},{"gamma":0.72}]},{"featureType":"road","elementType":"labels.icon"},{"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"hue":"#0077ff"},{"gamma":3.1}]},{"featureType":"water","stylers":[{"hue":"#00ccff"},{"gamma":0.44},{"saturation":-33}]},{"featureType":"poi.park","stylers":[{"hue":"#44ff00"},{"saturation":-23}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"hue":"#007fff"},{"gamma":0.77},{"saturation":65},{"lightness":99}]},{"featureType":"water","elementType":"labels.text.stroke","stylers":[{"gamma":0.11},{"weight":5.6},{"saturation":99},{"hue":"#0091ff"},{"lightness":-86}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"lightness":-48},{"hue":"#ff5e00"},{"gamma":1.2},{"saturation":-23}]},{"featureType":"transit","elementType":"labels.text.stroke","stylers":[{"saturation":-64},{"hue":"#ff9100"},{"lightness":16},{"gamma":0.47},{"weight":2.7}]}]
+
+          }
+
+          var map = new google.maps.Map(mainMapCanvas, mapOptions);
+
+          //setting marker for user location
+          var marker = new google.maps.Marker({
+
+              position: myLatlng,
+              map: map,
+              icon: "images/youAreHereMarker.png"
+
+          });
+
+
+          google.maps.event.addListener(map, "click", function(event) {
+
+            console.log(event.latLng.lat())
+            console.log(event.latLng.lng())
+
+            document.getElementById("clickedLat").innerHTML = "Source Latitude: " + event.latLng.lat();
+            document.getElementById("clickedLng").innerHTML = "Source Longitude: " + event.latLng.lng();
+
+            slideUpMenuFunction("mapClicked");
+
+            clickedLat = event.latLng.lat();
+            clickedLng = event.latLng.lng()
+
+          });
+
+          //Display base markers
+          for (i in markers_lat) {
+
+              var marker = new google.maps.Marker({
+
+                  position: new google.maps.LatLng(markers_lat[i], markers_long[i]),
+                  map: map,
+                  title: markers_title[i],
+                  icon: "images/base_drop_pin.png"
+
+              });
+
+              allMapMarkers.push(marker);
+
+              google.maps.event.addListener(marker, "click", function() {
+                  var clicked_lat = this.position.lat();
+                  var clicked_long = this.position.lng();
+                  var dataIndex = 0;
+                  for(e in base_json){
+
+                        if(base_json[e].LAT == clicked_lat){
+                            dataIndex = e;
+                        }
+
+                        e++;
+                  }
+
+                  var distance = Math.round(google.maps.geometry.spherical.computeDistanceBetween(myLatlng, this.position));
+
+                  if (distance/1000 >= 1){
+                    //Kilometres
+                    distance = distance/1000 + " km";
+                  }
+                  else {
+                    distance = distance + " m";
+                  }
+
+                  document.getElementById("marker_heading").innerHTML = "Recorded on: " + markers_date[dataIndex];
+                  document.getElementById("stationNumber").innerHTML = dataIndex+1;
+                  document.getElementById("marker_name").innerHTML = "Uploaded by: Base Data";
+                  document.getElementById("marker_distance").innerHTML = "Distance to Source: " + distance;
+                  document.getElementById("marker_comm").innerHTML = "Community: " + markers_community[dataIndex];
+                  document.getElementById("marker_lat").innerHTML = "Sources Latitude: " + markers_lat[dataIndex];
+                  document.getElementById("marker_long").innerHTML = "Sources Longitude: " + markers_long[dataIndex];
+                  document.getElementById("marker_description").innerHTML = "Description: <br/> None"
+                  document.getElementById("marker_info").classList.remove("slideDownAnimation")
+                  document.getElementById("marker_info").classList.add("slideUpAnimation")
+                  //Code will happen every time a marker is clicked
+              });
+
+          }
+
+          //Display uploaded markers
+          for (i in upload_markers_lat) {
+
+              var marker = new google.maps.Marker({
+
+                  position: new google.maps.LatLng(upload_markers_lat[i], upload_markers_long[i]),
+                  map: map,
+                  icon: "images/upload_drop_pin.png"
+
+              });
+
+              allMapMarkers.push(marker);
+
+              google.maps.event.addListener(marker, "click", function() {
+                  var clicked_lat = this.position.lat();
+                  var clicked_long = this.position.lng();
+                  var dataIndex = 0;
+                  for(e in upload_json){
+
+                        if(upload_json[e].LAT == clicked_lat){
+                            dataIndex = e;
+                        }
+
+                        e++;
+                  }
+
+                  var distance = Math.round(google.maps.geometry.spherical.computeDistanceBetween(myLatlng, this.position));
+
+                  if (distance/1000 >= 1){
+                    //Kilometres
+                    distance = distance/1000 + " km";
+                  }
+                  else {
+                    distance = distance + " m";
+                  }
+
+                  document.getElementById("marker_heading").innerHTML = "Recorded on: " + upload_date[dataIndex];
+                  document.getElementById("stationNumber").innerHTML = baseJSONLength+ dataIndex;
+                  document.getElementById("marker_name").innerHTML = "Uploaded by: " + upload_names[dataIndex];
+                  document.getElementById("marker_distance").innerHTML = "Distance to Source: " + distance;
+                  document.getElementById("marker_comm").innerHTML = "Community: Unknown";
+                  document.getElementById("marker_lat").innerHTML = "Sources Latitude: " + upload_markers_lat[dataIndex];
+                  document.getElementById("marker_long").innerHTML = "Sources Longitude: " + upload_markers_long[dataIndex];
+                  document.getElementById("marker_description").innerHTML = "Description: <br/>" + upload_description[dataIndex]
+                  document.getElementById("marker_info").classList.remove("slideDownAnimation")
+                  document.getElementById("marker_info").classList.add("slideUpAnimation")
+                  //Code will happen every time a marker is clicked
+              });
+
+          }
+
+          document.getElementById("closest_water_button").onclick = function(){
+
+            var marker = new google.maps.Marker({
+
+                position: new google.maps.LatLng(50, 50),
+                map: map,
+
+            });
+
+            function rad(x) {return x*Math.PI/180;}
+            function closestWaterCalulation() {
+                lat = myLatlng.lat();
+                lng = myLatlng.lng();
+                var R = 6371; // radius of earth in km
+                var distances = [];
+                var closest = -1;
+                for( i=0;i<allMapMarkers.length; i++ ) {
+                  console.log(allMapMarkers[i])
+                    var mlat = allMapMarkers[i].position.G;
+                    var mlng = allMapMarkers[i].position.K;
+                    var dLat  = rad(mlat - lat);
+                    var dLong = rad(mlng - lng);
+                    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                        Math.cos(rad(lat)) * Math.cos(rad(lat)) * Math.sin(dLong/2) * Math.sin(dLong/2);
+                    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                    var d = R * c;
+                    distances[i] = d;
+                    if ( closest == -1 || d < distances[closest] ) {
+                        closest = i;
+                    }
+                }
+
+                var distance = Math.round(google.maps.geometry.spherical.computeDistanceBetween(myLatlng, allMapMarkers[closest].position));
+                if (distance/1000 >= 1){
+                  //Kilometres
+                  document.getElementById("disatanceToClosestWaterSource").innerHTML = distance/1000 + " km";
+                }
+                else {
+                  document.getElementById("disatanceToClosestWaterSource").innerHTML = distance + " m";
+                }
+
+                var flightPlanCoordinates = [
+                  {lat: lat, lng: lng},
+                  {lat: allMapMarkers[closest].position.G, lng: allMapMarkers[closest].position.K},
+                ];
+
+                var line = new google.maps.Polyline({
+                    path: flightPlanCoordinates,
+                    strokeColor: "red",
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2,
+                    map: map
+                });
+
+                map.setCenter(myLatlng);
+                map.setZoom(16);
+            }
+
+            closestWaterCalulation();
+
+          }
+
+
+      }
+
+      function dataSubmitted(formType){
+
+        if (formType == "manual"){
+          var userName = document.getElementById("userName").value
+          var userDescription = document.getElementById("userDescription").value
+          var userLat = document.getElementById("userLat").value
+          var userLong = document.getElementById("userLong").value
+
+          if (userLat == "" || userLong == ""){
+            document.getElementById("uploadStatus").innerHTML = "YOU NEED TO ENTER A LATITUDE AND LONGITUDE!";
+            setTimeout(function(){
+              document.getElementById("uploadStatus").innerHTML = "";
+            }, 3000);
+          }
+          else{
+            var url = "http://cgscomputing.com/damian/waterwhere/api/crowdsourced_loc/?key=" + apiKey + "&method=input&name=" + userName + "&description=" + userDescription + "&lat=" + userLat + "&long=" + userLong;
+
+            console.log(url)
+
+            var req = new XMLHttpRequest();
+            req.open("GET", url , false);
+            req.send();
+
+            responseText = req.responseText;
+
+            console.log(responseText)
+
+            if (responseText == "OK"){
+              console.log("Upload complete!");
+              document.getElementById("uploadStatus").innerHTML = "UPLOAD COMPLETE!";
+              var userName = document.getElementById("userName").value = "";
+              var userDescription = document.getElementById("userDescription").value = "";
+              var userLat = document.getElementById("userLat").value = "";
+              var userLong = document.getElementById("userLong").value = "";
+              setTimeout(function(){
+                document.getElementById("uploadStatus").innerHTML = "";
+              }, 3000);
+            }
+            else{
+              document.getElementById("uploadStatus").innerHTML = "OH NO, UPLOAD FAILED!";
+              setTimeout(function(){
+                document.getElementById("uploadStatus").innerHTML = "";
+              }, 3000);
+            }
+          }
+        }
+        else {
+          var userNameAuto = document.getElementById("userNameAuto").value
+          var userDescriptionAuto = document.getElementById("userDescriptionAuto").value
+          var url = "http://cgscomputing.com/damian/waterwhere/api/crowdsourced_loc/?key=" + apiKey + "&method=input&name=" + userNameAuto + "&description=" + userDescriptionAuto + "&lat=" + clickedLat + "&long=" + clickedLng;
+
+          var req = new XMLHttpRequest();
+          req.open("GET", url , false);
+          req.send();
+
+          responseText = req.responseText;
+
+          console.log(responseText);
+
+          if (responseText == "OK"){
+            console.log("Upload complete!");
+            document.getElementById("uploadStatusAuto").innerHTML = "UPLOAD COMPLETE!";
+            document.getElementById("userNameAuto").value = "";
+            document.getElementById("userDescriptionAuto").value = "";
+            setTimeout(function(){
+              document.getElementById("uploadStatusAuto").innerHTML = "";
+            }, 3000);
+          }
+          else{
+            document.getElementById("uploadStatusAuto").innerHTML = "OH NO, UPLOAD FAILED!";
+            setTimeout(function(){
+              document.getElementById("uploadStatusAuto").innerHTML = "";
+            }, 3000);
+          }
+          clickedLat = 0;
+          clickedLng = 0;
+          initialize();
+
+        }
+
+      }
+
+      google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+
+  </head>
+
+  <body onload="initialize()">
+
+
+    <img id="settings_icon" src="images/settings.png" onclick="slideDownMenuFunction(this)"/>
+    <p id="disatanceToClosestWaterSource"></p>
+    <img id="upload_icon" src="images/upload.png" onclick="slideDownMenuFunction(this)"/>
+
+    <div id="map-canvas-entry"></div>
+
+
+    <div id="closest_water_button">
+
+       <img src="images/closestSource-1.png"/>
+
+
+    </div>
+
+    <div id="tips_button" onclick="slideUpMenuFunction(this)">
+
+      <img src="images/tips.png" />
+
+    </div>
+
+    <div class="sub_menu settingMenu" id="settingsMenu">
+
+      <p><img id="settingsMenuSlideUp" src="images/close.png" alt="slide down" onclick="slideUpMenuFunction(this)"/></p>
+
+      <h1>Settings</h1>
+
+      <button onclick="initialize()">Manually refresh map</button>
+    </div>
+
+    <div class="sub_menu settingMenu" id="uploadMenu">
+
+      <p><img id="uploadsMenuSlideUp" src="images/close.png" alt="slide down" onclick="slideUpMenuFunction(this)"/></p>
+
+      <h1>Upload Manual</h1>
+
+      <div id = "dataSubmittionForm">
+
+            <label for="userName">Name: </label>
+            <input id="userName" name="name" placeholder="John Dow">
+
+            <br/>
+            <br/>
+
+            <label for="userLat">Latitude: </label>
+            <input id="userLat" name="lat" placeholder="39.2398462983">
+
+            <br/>
+            <br/>
+
+            <label for="userLong">Longitude: </label>
+            <input id="userLong" name="long" placeholder="45.5967458967">
+
+            <br/>
+            <br/>
+
+            <label for="userDescription">Description: <br/><br/></label>
+            <textarea rows="5" id="userDescription" name="description" placeholder="Describe where the source is or what it looks like."></textarea>
+
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+
+            <div id="uploadStatus"></div>
+
+            <br/>
+            <br/>
+            <br/>
+
+            <button label="Submit" onclick="dataSubmitted('manual')"> Upload Source! </button>
+
+
+      </div>
+
+    </div>
+
+    <div class="sub_menu" id="uploadMenuAuto">
+
+      <p><img id="uploadsMenuSlideUp" src="images/close.png" alt="slide down" onclick="slideDownMenuFunction('mapClicked')"/></p>
+
+      <h1>Upload Automatic</h1>
+
+      <div id = "dataSubmittionForm">
+
+            <label for="userName">Name: </label>
+            <input id="userNameAuto" name="name" placeholder="John Dow">
+            <br/>
+            <br/>
+            <p id="clickedLat"></p>
+            <p id="clickedLng"></p>
+
+            <label for="userDescription">Description: <br/><br/></label>
+            <textarea rows="5" id="userDescriptionAuto" name="description" placeholder="Describe where the source is or what it looks like."></textarea>
+
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+
+            <div id="uploadStatusAuto"></div>
+
+            <br/>
+            <br/>
+            <br/>
+
+            <button label="Submit" onclick="dataSubmitted('automatic')"> Upload Source! </button>
+
+
+      </div>
+
+    </div>
+
+
+    <div class = "sub_menu " id = "tips_home">
+
+      <p><img id="tipsMenuSlideDown" src="images/close.png" alt="slide down" onclick="slideDownMenuFunction(this)"/></p>
+
+      <table>
+
+        <tr>
+
+            <td><h3>Purify Dirty Water.</h3></td>
+            <td><img id = "tipsMenuItems" src="images/boilingWaterVat.png" /></td>
+
+        </tr>
+        <tr>
+          <td colspan="2">
+
+            Knowing how to Purify dirty water is essential if you don't live near one of our water sources. There are many ways to purify dirty water, take a look below to see some of these methods.
+
+            <br/>
+            <br/>
+
+            <strong>Boil the water.</strong>The first and easiest step to purifying dirty water is to boil it (rise its tempurature above 100 degrees celcius). To do this simply place a pot of dirty water over an open fire until it vigorously bubbles. Make sure that it is cold enough to drink before taking a sip! It is also important to note that boiling the water should only occur if the water is a little bit dirty.
+
+          </td>
+
+        </tr>
+
+        <tr>
+
+            <td><h3>Keep Water ways clean.</h3></td>
+            <td><img id = "tipsMenuItems1" src="images/staying_clean.png" /></td>
+
+        </tr>
+        <tr>
+          <td colspan="2">
+
+            Doing your bit to Keep water clean is essential to the ultimate improvement of the water quality in your region. Below are a list of key steps you can take to keep your water sources clean.
+
+            <br/>
+            <br/>
+
+            <strong>Don't treat water as a rubbish tip or toilet.</strong> Water is essential to you and your families survival - dont risk it pollution by discarding waste into it.
+
+          </td>
+
+        </tr>
+        <tr>
+
+            <td><h3>Prevent Disease.</h3></td>
+            <td><img id = "tipsMenuItems2" src="images/disease.png" /></td>
+
+        </tr>
+        <tr>
+          <td colspan="2">
+
+            Water Bourne diseases can be lethal. It is super important to reduce the risk of disease spread through your water way. As soon as disease enders the water way you will not be able to drink the water without the risk of infection.
+
+            <br/>
+            <br/>
+
+            <strong>Do not contaminate the water at any cost</strong> This is very similar to the tip above - make sure that you do not contaminate waterways with any pollutions (i.e. human waste, rubbish etc.).
+
+          </td>
+
+        </tr>
+
+
+      </table>
+      
+    </div>
+
+    <div class="sub_menu" id="marker_info">
+
+      <p><img id="markerMenuSlideDown" src="images/close.png" alt="slide down" onclick="slideDownMenuFunction(this)"/></p>
+      <h1>Clean Water station <span id="stationNumber"></span></h1>
+      <p id="marker_name"></p>
+      <p id="marker_heading"></p>
+      <p id="marker_distance"></p>
+      <p id="marker_comm"></p>
+      <p id="marker_lat"></p>
+      <p id="marker_long"></p>
+      <p id="marker_description"></p>
+
+    </div>
+
+  </body>
+
+</html>

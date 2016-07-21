@@ -1,0 +1,270 @@
+table{
+  width: 90%;
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+table img {
+  height: 40px;
+  width: 40px;
+}
+
+html, body, #map-canvas-entry {
+  font-family: "Roboto", cursive;
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+
+body{
+  font-family: 'Roboto', cursive;
+  background-color: #00B7FF;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  overflow-y: hidden;
+}
+
+#map-canvas-entry {
+  position: absolute;
+  top: 8%;
+  height: 79%;
+  z-index: 1;
+  background-color: white;
+  display: block;
+  background-image: url("images/loading.gif");
+  background-size: 100px 100px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#uploadMapCanvas {
+  width: 100%;;
+  height: 400px;
+  position: absolute;
+  background-color: #00B7FF;
+  top: 20px;
+  left: 20px;
+}
+
+#settings_icon {
+  height: 40px;
+  width: 40px;
+  position: absolute;
+  right: 5px;
+  top: 0px;
+}
+#upload_icon{
+  top: 10px;
+  position: absolute;
+  left: 10px;
+  height: 22px;
+}
+
+#closest_water_button{
+  position: absolute;
+  bottom: 0;
+  width: 78%;
+  left: 0;
+  height: 13%;
+  text-align: center;
+  background-color: #3498db;
+
+}
+
+#closest_water_button img, #tips_button img {
+  height: 35px;
+  width: 35px;
+  vertical-align: middle;
+  display: inline-block;
+  margin-top: 18px;
+}
+
+#tips_button{
+  width: 22%;
+  background-color: #00B7FF;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 13%;
+  text-align: center;
+}
+
+
+.sub_menu {
+  z-index: 100;
+  position: fixed;
+  top: 100vh;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #00A7E8;
+  opacity: 0.9;
+  color: white;
+
+}
+
+.sub_menu h1 {
+  margin-left: 10px;
+}
+
+.sub_menu img {
+  width: 20px;
+  height: 20px;
+  position:absolute;
+  right: 10px;
+  top: 10px;
+}
+
+#tipsMenuItems{
+  height: 80px;
+  width: 80px;
+  position: static;
+}
+#tipsMenuItems1{
+  height: 80px;
+  width: 80px;
+  position: static;
+}
+#tipsMenuItems2{
+  height: 50px;
+  width: 50px;
+  position: static;
+}
+
+#uploadMenu, #uploadMenuAuto {
+  opacity: 1;
+}
+
+#tips_home {
+  border: solid transparent 2px;
+  position: absolute;
+  height: 100vh;
+  overflow-y: auto !important;
+}
+
+#tips_home div img {
+  height: 60px;
+  width: 60px;
+  margin-top: 4%;
+}
+
+.leftAlignTipsDiv img{
+  width: 50px;
+  height: 50px;
+  float: left;
+  margin: 5px;
+
+}
+.leftAlignTipsDiv h1{
+  text-align: right;
+
+}
+.leftAlignTipsDiv p{
+  text-align: right;
+
+}
+
+.rightAlignTipsDiv img{
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+  float: right;
+}
+
+.rightAlignTipsDiv h1{
+  text-align: left;
+  padding: 0px;
+
+}
+.rightAlignTipsDiv p{
+  text-align: left;
+}
+
+#marker_info{
+  font-size: 80%;
+}
+#marker_info p{
+  margin-left: 20px;
+}
+#marker_info h1{
+  margin-left: 20px;
+}
+
+.settingMenu{
+  position: absolute;
+  top: -100vh
+}
+
+.slideUpAnimation{
+  transform: translateY(-100vh);
+  transition: 0.5s;
+}
+.slideDownAnimation{
+  transform: translateY(100vh);
+  transition: 0.5s;
+}
+
+#userDescription{
+  height: 100px;
+  width: 90%;
+}
+#userDescriptionAuto{
+  height: 100px;
+  width: 90%;
+}
+
+input, textarea{
+  padding: 5px;
+  border: solid black 2px;
+  height: 20px;
+  font-size: 100%;
+  position: absolute;
+  right: 10px;
+  margin-bottom: 10px;
+}
+
+#uploadMenuAuto #clickedLat, #uploadMenuAuto #clickedLng {
+  width: 90%;
+  height: 40px;
+  margin-left: 10px;
+}
+
+button{
+  width: 90%;
+  height: 40px;
+  font-size: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 5px;
+  position: absolute;
+  right: 15px;
+}
+
+#uploadStatus{
+  position: absolute;
+  right: 15px;
+  width: 90%;
+  height: 40px;
+  font-size: 100%;
+  text-align: center
+}
+
+#uploadStatusAuto{
+  position: absolute;
+  right: 15px;
+  width: 90%;
+  height: 40px;
+  font-size: 100%;
+  text-align: center;
+}
+
+label{
+  margin-left: 10px;
+}
+
+#disatanceToClosestWaterSource{
+  text-align: center;
+  color: white;
+}

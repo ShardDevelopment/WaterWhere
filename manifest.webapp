@@ -1,0 +1,17 @@
+{
+  "name": "WaterWhere",
+  "description": "This App allows for people is developing countries to find clean water sources and provides helpful tips on how to purify and clean previously dirty water. The Application is powered by Google Maps and was designed and developed by Jaxon Kneipp and Damian Camilleri 2015",
+  "launch_path": "/index.html",
+  "icons": {
+    "16": "/icons/new_icon.png",
+    "48": "/icons/new_icon.png",
+    "60": "/icons/new_icon.png",
+    "128": "/icons/new_icon.png"
+  },
+  "developer": {
+    "name": "Your name",
+    "url": "http://example.com"
+  },
+  "orientation": "portrait-primary",
+  "fullscreen": "true"
+}
